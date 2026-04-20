@@ -59,38 +59,39 @@ test_clip = false;
 $fn = 40;
 
 // ----- BRACKET PROFILE -----
-// GearTrack engagement tab built from overlapping rectangles.
-// Each C-clip piece overlaps neighbors by 1-2mm to form one solid.
-// Derived from CosmicProphet's Gearwall_Bracket_10mm.stl
+// Exact 2D boundary polygon extracted from the Z=0 face of
+// CosmicProphet's Gearwall_Bracket_10mm.stl
 // (Thingiverse thing:4075984, CC BY 4.0)
+// X = depth (negative=wall, positive=room), Y = height
+_bracket_profile = [
+    [  -6.000,  -62.467],
+    [  10.600,  -61.867],
+    [  10.000,   19.733],
+    [  -4.990,   20.143],
+    [  -5.400,   21.133],
+    [  -5.400,   31.733],
+    [  -5.753,   31.733],
+    [  -8.600,   26.039],
+    [  -8.600,   12.592],
+    [  -7.620,    7.533],
+    [  -5.400,    7.533],
+    [  -4.823,   12.266],
+    [  -4.000,   12.533],
+    [   2.990,   12.123],
+    [   3.400,   11.133],
+    [   2.990,  -56.857],
+    [   2.000,  -57.267],
+    [ -10.600,  -57.867],
+    [ -10.600,  -64.344],
+    [  -9.699,  -67.467],
+    [  -7.400,  -67.467],
+    [  -6.823,  -62.734],
+    [  -6.219,  -62.484]
+];
 
 module bracket_tab() {
-    linear_extrude(height = tab_width) {
-        // --- Lower C-clip ---
-        // Back plate (spans full lower hook height, overlaps arms)
-        translate([-11, -68])   square([5, 12]);     // X:-11 to -6, Y:-68 to -56
-        // Bottom arm (under lower rail, overlaps back plate)
-        translate([-7, -63.5])  square([18, 2]);     // X:-7 to 11, Y:-63.5 to -61.5
-        // Front post (connects bottom and top arms)
-        translate([10, -63.5])  square([1, 7]);      // X:10 to 11, Y:-63.5 to -56.5
-        // Top arm (over lower rail, overlaps back plate and bridge)
-        translate([-11, -58.5]) square([15, 2]);     // X:-11 to 4, Y:-58.5 to -56.5
-
-        // --- Bridge ---
-        translate([-8, -57])    square([12, 64]);    // X:-8 to 4, Y:-57 to 7
-
-        // --- Upper C-clip ---
-        // Back plate (spans full upper hook, overlaps bridge and arms)
-        translate([-9, 7])      square([5, 26]);     // X:-9 to -4, Y:7 to 33
-        // Inner plate (overlaps bridge top)
-        translate([-5, 7])      square([9, 7]);      // X:-5 to 4, Y:7 to 14
-        // Bottom arm (under upper rail, overlaps back plate)
-        translate([-6, 18.5])   square([17, 2]);     // X:-6 to 11, Y:18.5 to 20.5
-        // Front post
-        translate([10, 18.5])   square([1, 3]);      // X:10 to 11, Y:18.5 to 21.5
-        // Top arm (over upper rail, overlaps back plate)
-        translate([-6, 20])     square([2, 2]);      // X:-6 to -4, Y:20 to 22
-    }
+    linear_extrude(height = tab_width)
+        polygon(points = _bracket_profile);
 }
 
 // ----- DERIVED -----
