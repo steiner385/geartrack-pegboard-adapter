@@ -2,8 +2,8 @@
 // Slides into Gladiator GearTrack/GearWall channels and presents
 // standard 1/4" pegboard holes for your existing hooks.
 //
-// Self-contained — no external STL dependencies.
-// Bracket profile traced from CosmicProphet's GearTrack Mounting
+// Self-contained — no external dependencies.
+// Bracket profile derived from CosmicProphet's GearTrack Mounting
 // Brackets (Thingiverse thing:4075984), licensed CC BY 4.0.
 //
 // Print settings:
@@ -59,32 +59,39 @@ test_clip = false;
 $fn = 40;
 
 // ----- BRACKET PROFILE -----
-// GearTrack engagement tab built from solid rectangular sections.
-// Geometry derived from CosmicProphet's Gearwall_Bracket_10mm.stl
+// GearTrack engagement tab built from overlapping rectangles.
+// Each C-clip piece overlaps neighbors by 1-2mm to form one solid.
+// Derived from CosmicProphet's Gearwall_Bracket_10mm.stl
 // (Thingiverse thing:4075984, CC BY 4.0)
-// Each entry: [x, y, width, height]
-_bracket_rects = [
-    // --- Lower C-clip (hooks around lower rail) ---
-    [ -10.1, -68.0,   3.1,  4.0],  // Bottom tab tip
-    [ -11.0, -64.5,   1.0,  7.0],  // Back vertical post
-    [  -7.0, -63.0,  18.0,  1.0],  // Horizontal arm UNDER lower rail
-    [  10.5, -63.0,   0.5,  6.0],  // Front vertical post
-    [ -11.0, -58.0,  14.0,  1.0],  // Horizontal arm OVER lower rail
-    [   2.5, -57.0,   1.0,  1.0],  // Front edge transition
 
-    // --- Bridge (connects lower and upper hooks) ---
-    [  -8.0, -57.0,  11.4, 64.0],  // Main bridge plate
+module bracket_tab() {
+    linear_extrude(height = tab_width) {
+        // --- Lower C-clip ---
+        // Back plate (spans full lower hook height, overlaps arms)
+        translate([-11, -68])   square([5, 12]);     // X:-11 to -6, Y:-68 to -56
+        // Bottom arm (under lower rail, overlaps back plate)
+        translate([-7, -63.5])  square([18, 2]);     // X:-7 to 11, Y:-63.5 to -61.5
+        // Front post (connects bottom and top arms)
+        translate([10, -63.5])  square([1, 7]);      // X:10 to 11, Y:-63.5 to -56.5
+        // Top arm (over lower rail, overlaps back plate and bridge)
+        translate([-11, -58.5]) square([15, 2]);     // X:-11 to 4, Y:-58.5 to -56.5
 
-    // --- Upper C-clip (hooks around upper rail) ---
-    [  -8.0,   7.0,   3.0,  1.0],  // Upper tab tip
-    [  -5.4,   7.0,   8.8,  6.0],  // Inner plate section
-    [  -9.0,  12.0,  12.0,  1.0],  // Rear extension
-    [  -5.0,  19.0,  16.0,  1.0],  // Horizontal arm UNDER upper rail
-    [  10.5,  19.0,   0.5,  2.0],  // Front vertical post
-    [  -5.4,  20.0,   1.0,  1.0],  // Arm OVER upper rail
-    [  -9.0,  25.5,   0.5,  1.0],  // Rear catch
-    [  -6.1,  31.0,   1.1,  1.5],  // Top tab tip
-];
+        // --- Bridge ---
+        translate([-8, -57])    square([12, 64]);    // X:-8 to 4, Y:-57 to 7
+
+        // --- Upper C-clip ---
+        // Back plate (spans full upper hook, overlaps bridge and arms)
+        translate([-9, 7])      square([5, 26]);     // X:-9 to -4, Y:7 to 33
+        // Inner plate (overlaps bridge top)
+        translate([-5, 7])      square([9, 7]);      // X:-5 to 4, Y:7 to 14
+        // Bottom arm (under upper rail, overlaps back plate)
+        translate([-6, 18.5])   square([17, 2]);     // X:-6 to 11, Y:18.5 to 20.5
+        // Front post
+        translate([10, 18.5])   square([1, 3]);      // X:10 to 11, Y:18.5 to 21.5
+        // Top arm (over upper rail, overlaps back plate)
+        translate([-6, 20])     square([2, 2]);      // X:-6 to -4, Y:20 to 22
+    }
+}
 
 // ----- DERIVED -----
 plate_w = (width - 1) * hole_spacing + 2 * plate_margin;
@@ -92,14 +99,12 @@ plate_h = (height - 1) * hole_spacing + 2 * plate_margin;
 
 num_tabs = max(1, ceil(width / 4));
 
-bracket_height = 100;  // Y span of bracket profile
+bracket_height = 100;
 bracket_y_min  = -68;
-bracket_front  = 11;   // Front face X position
+bracket_front  = 11;
 
 num_gaps = width - 1;
 
-// Edge-to-edge tab distribution
-// 1 tab → center gap; 2+ → first, last, then evenly between
 function tab_gap_index(i, n, gaps) =
     (n == 1) ? floor(gaps / 2) :
     floor(i * (gaps - 1) / (n - 1));
@@ -108,13 +113,6 @@ function gap_z(gap_idx) =
     plate_margin + (gap_idx + 0.5) * hole_spacing;
 
 // ----- MODULES -----
-
-module bracket_tab() {
-    linear_extrude(height = tab_width)
-        for (r = _bracket_rects)
-            translate([r[0], r[1]])
-                square([r[2], r[3]]);
-}
 
 module pegboard_plate() {
     difference() {
@@ -133,28 +131,15 @@ module rib() {
     cube([standoff, plate_h, rib_thick]);
 }
 
-// Triangular gusset wedge.
-// Right-triangle cross-section in X-Z plane, extruded in Y.
-// leg_x = length along rib (X direction)
-// leg_z = length along surface (Z direction)
-// h = height (Y direction)
 module gusset_wedge(leg_x, leg_z, h) {
-    // Triangle defined in X-Z, extruded along Y via polyhedron
     polyhedron(
         points = [
-            [0,  0,  0],           // 0: origin corner
-            [leg_x, 0, 0],         // 1: along rib
-            [0,  0,  leg_z],       // 2: along surface
-            [0,  h,  0],           // 3: origin top
-            [leg_x, h, 0],         // 4: along rib top
-            [0,  h,  leg_z]        // 5: along surface top
+            [0, 0, 0], [leg_x, 0, 0], [0, 0, leg_z],
+            [0, h, 0], [leg_x, h, 0], [0, h, leg_z]
         ],
         faces = [
-            [0, 2, 1],            // bottom triangle
-            [3, 4, 5],            // top triangle
-            [0, 1, 4, 3],         // rib face
-            [1, 2, 5, 4],         // hypotenuse
-            [0, 3, 5, 2]          // surface face
+            [0, 2, 1], [3, 4, 5],
+            [0, 1, 4, 3], [1, 2, 5, 4], [0, 3, 5, 2]
         ]
     );
 }
@@ -169,6 +154,7 @@ if (test_clip) {
     for (i = [0 : num_tabs - 1]) {
         gi = tab_gap_index(i, num_tabs, num_gaps);
         rz = gap_z(gi);
+        g = gusset;
 
         // Bracket tab
         translate([0, 0, rz - tab_width / 2])
@@ -178,22 +164,13 @@ if (test_clip) {
         translate([bracket_front, plate_y_offset, rz - rib_thick / 2])
             rib();
 
-        // Gussets: 4 wedges per rib (back-left, back-right, front-left, front-right)
-        g = gusset;
-
-        // Back-left: at bracket face, spreading in -Z direction
+        // Gussets (4 wedges per rib)
         translate([bracket_front, plate_y_offset, rz - rib_thick / 2])
             gusset_wedge(g, -g, plate_h);
-
-        // Back-right: at bracket face, spreading in +Z direction
         translate([bracket_front, plate_y_offset, rz + rib_thick / 2])
             gusset_wedge(g, g, plate_h);
-
-        // Front-left: at plate face, spreading in -Z direction
         translate([bracket_front + standoff, plate_y_offset, rz - rib_thick / 2])
             gusset_wedge(-g, -g, plate_h);
-
-        // Front-right: at plate face, spreading in +Z direction
         translate([bracket_front + standoff, plate_y_offset, rz + rib_thick / 2])
             gusset_wedge(-g, g, plate_h);
     }
