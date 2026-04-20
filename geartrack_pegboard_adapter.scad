@@ -59,39 +59,34 @@ test_clip = false;
 $fn = 40;
 
 // ----- BRACKET PROFILE -----
-// 2D cross-section of the GearTrack engagement tab.
-// Traced from CosmicProphet's Gearwall_Bracket_10mm.stl
+// GearTrack engagement tab built from rectangular sections.
+// Geometry derived from CosmicProphet's Gearwall_Bracket_10mm.stl
 // (Thingiverse thing:4075984, CC BY 4.0)
-// X = depth (negative = wall, positive = room)
-// Y = height (vertical)
-_bracket_profile = [
-    [  -9.94, -68.00],
-    [ -11.00, -64.50],
-    [  -6.82, -62.50],
-    [  10.52, -62.00],
-    [ -10.98, -57.50],
-    [   2.94, -56.00],
-    [  -8.01,   7.50],
-    [  -5.25,  12.00],
-    [  -9.00,  12.50],
-    [  10.59,  19.00],
-    [  -5.40,  21.00],
-    [  -9.00,  26.00],
-    [  -5.75,  31.50],
-    [  -6.11,  32.00],
-    [  -5.00,  32.00],
-    [  -8.60,  26.00],
-    [  -4.50,  20.50],
-    [  11.00,  19.00],
-    [   2.82,  12.50],
-    [   3.40,  11.00],
-    [  -5.14,   7.00],
-    [   2.99, -57.00],
-    [ -10.59, -58.00],
-    [  11.00, -62.00],
-    [  10.42, -63.00],
-    [ -10.60, -64.50],
-    [  -7.14, -68.00]
+// Each entry: [x, y, width, height]
+_bracket_rects = [
+    [ -10.1, -68.0,   3.1,  1.0],  // Bottom tab (hooks under lower rail)
+    [ -11.0, -64.5,   0.4,  0.5],  // Back catch
+    [  -7.4, -64.0,   0.6,  1.0],  // Lower transition
+    [  -7.2, -63.0,  17.7,  0.5],  // Under lower rail (C-clip)
+    [  -6.8, -62.5,  17.7,  0.5],  // Under lower rail cont.
+    [  10.5, -62.0,   0.5,  0.5],  // Front post lower
+    [ -11.0, -58.0,   0.4,  0.5],  // Back wall return
+    [ -11.0, -57.5,  13.0,  0.5],  // Over lower rail
+    [ -10.8, -57.0,  13.8,  0.5],  // Over lower rail cont.
+    [   2.5, -56.5,   0.8,  0.5],  // Front edge taper
+    [   2.9, -56.0,   0.5,  0.5],  // Front edge taper cont.
+    [  -8.0,   7.0,   3.0,  1.0],  // Upper tab (hooks under upper rail)
+    [  -5.4,  11.0,   8.8,  1.5],  // Back plate / bridge top
+    [  -9.0,  12.5,  11.8,  0.5],  // Rear extension
+    [  10.6,  19.0,   0.4,  0.5],  // Front post upper
+    [  -4.0,  19.5,  15.0,  0.5],  // Under upper rail (C-clip)
+    [  -5.0,  20.0,  15.8,  0.5],  // Under upper rail cont.
+    [  -5.3,  20.5,   0.8,  0.5],  // Over upper rail taper
+    [  -5.4,  21.0,   0.5,  0.5],  // Over upper rail taper cont.
+    [  -9.0,  26.0,   0.4,  0.5],  // Rear feature
+    [  -6.1,  31.5,   1.1,  1.0],  // Top tab
+    // Bridge connecting lower and upper hooks
+    [  -8.0, -56.0,  11.4, 63.0],  // Main bridge plate
 ];
 
 // ----- DERIVED -----
@@ -119,7 +114,9 @@ function gap_z(gap_idx) =
 
 module bracket_tab() {
     linear_extrude(height = tab_width)
-        polygon(points = _bracket_profile);
+        for (r = _bracket_rects)
+            translate([r[0], r[1]])
+                square([r[2], r[3]]);
 }
 
 module pegboard_plate() {
