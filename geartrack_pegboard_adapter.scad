@@ -43,6 +43,9 @@ standoff = 17.0; // [12:1:25]
 // Rib thickness in mm (horizontal direction)
 rib_thick = 4.0; // [3:0.5:6]
 
+// Gusset size in mm (triangular reinforcement at rib joints)
+gusset = 10.0; // [6:1:15]
+
 /* [Advanced] */
 
 // Tab width in mm (along the track)
@@ -136,6 +139,32 @@ module rib() {
     cube([standoff, plate_h, rib_thick]);
 }
 
+// Triangular gusset wedge.
+// Right-triangle cross-section in X-Z plane, extruded in Y.
+// leg_x = length along rib (X direction)
+// leg_z = length along surface (Z direction)
+// h = height (Y direction)
+module gusset_wedge(leg_x, leg_z, h) {
+    // Triangle defined in X-Z, extruded along Y via polyhedron
+    polyhedron(
+        points = [
+            [0,  0,  0],           // 0: origin corner
+            [leg_x, 0, 0],         // 1: along rib
+            [0,  0,  leg_z],       // 2: along surface
+            [0,  h,  0],           // 3: origin top
+            [leg_x, h, 0],         // 4: along rib top
+            [0,  h,  leg_z]        // 5: along surface top
+        ],
+        faces = [
+            [0, 2, 1],            // bottom triangle
+            [3, 4, 5],            // top triangle
+            [0, 1, 4, 3],         // rib face
+            [1, 2, 5, 4],         // hypotenuse
+            [0, 3, 5, 2]          // surface face
+        ]
+    );
+}
+
 // ----- ASSEMBLY -----
 
 if (test_clip) {
@@ -147,13 +176,35 @@ if (test_clip) {
         gi = tab_gap_index(i, num_tabs, num_gaps);
         rz = gap_z(gi);
 
+        // Bracket tab
         translate([0, 0, rz - tab_width / 2])
             bracket_tab();
 
+        // Vertical rib
         translate([bracket_front, plate_y_offset, rz - rib_thick / 2])
             rib();
+
+        // Gussets: 4 wedges per rib (back-left, back-right, front-left, front-right)
+        g = gusset;
+
+        // Back-left: at bracket face, spreading in -Z direction
+        translate([bracket_front, plate_y_offset, rz - rib_thick / 2])
+            gusset_wedge(g, -g, plate_h);
+
+        // Back-right: at bracket face, spreading in +Z direction
+        translate([bracket_front, plate_y_offset, rz + rib_thick / 2])
+            gusset_wedge(g, g, plate_h);
+
+        // Front-left: at plate face, spreading in -Z direction
+        translate([bracket_front + standoff, plate_y_offset, rz - rib_thick / 2])
+            gusset_wedge(-g, -g, plate_h);
+
+        // Front-right: at plate face, spreading in +Z direction
+        translate([bracket_front + standoff, plate_y_offset, rz + rib_thick / 2])
+            gusset_wedge(-g, g, plate_h);
     }
 
+    // Pegboard plate
     translate([bracket_front + standoff, plate_y_offset, 0])
         pegboard_plate();
 }
