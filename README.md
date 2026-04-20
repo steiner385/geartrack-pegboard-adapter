@@ -2,15 +2,14 @@
 
 A 3D-printable adapter that slides into Gladiator GearTrack/GearWall channels and presents standard 1/4" pegboard holes — so you can reuse your existing pegboard hooks on GearTrack.
 
-![Adapter concept](https://img.shields.io/badge/OpenSCAD-Customizable-blue)
-
 ## Features
 
-- **Exact GearTrack fit** — uses the proven bracket profile from [CosmicProphet's GearTrack Mounting Brackets](https://www.thingiverse.com/thing:4075984)
+- **Exact GearTrack fit** — bracket profile traced from [CosmicProphet's GearTrack Mounting Brackets](https://www.thingiverse.com/thing:4075984)
+- **Self-contained** — single OpenSCAD file, no external dependencies
 - **Standard pegboard holes** — 1/4" (6.35mm) holes on 1" (25.4mm) centers
-- **Parametric** — customize width, height, standoff depth, and more in OpenSCAD or Thingiverse Customizer
-- **Hook clearance** — adjustable standoff (default 17mm) behind the pegboard plate for hook backs
-- **Smart tab distribution** — GearTrack tabs placed at the edges and evenly distributed, never behind holes
+- **Fully parametric** — customize width, height, standoff depth, and more via OpenSCAD or Thingiverse Customizer
+- **Hook clearance** — adjustable standoff (default 17mm) behind the plate for hook backs
+- **Smart tab distribution** — GearTrack tabs at the edges, evenly distributed, never behind holes
 
 ## Pre-generated STLs
 
@@ -54,13 +53,12 @@ A 3D-printable adapter that slides into Gladiator GearTrack/GearWall channels an
 
 ## Files
 
-- `geartrack_pegboard_adapter.scad` — Parametric OpenSCAD source (Customizer compatible)
-- `Gearwall_Bracket_10mm.stl` — Required bracket profile dependency
+- `geartrack_pegboard_adapter.scad` — Parametric OpenSCAD source (Thingiverse Customizer compatible)
 - `GearTrack_Pegboard_*.stl` — Pre-generated common sizes
 
 ## Attribution
 
-GearTrack bracket profile by [CosmicProphet](https://www.thingiverse.com/thing:4075984), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+GearTrack bracket profile traced from [CosmicProphet's GearTrack Mounting Brackets](https://www.thingiverse.com/thing:4075984), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
 ## License
 

@@ -2,9 +2,9 @@
 // Slides into Gladiator GearTrack/GearWall channels and presents
 // standard 1/4" pegboard holes for your existing hooks.
 //
-// Requires: Gearwall_Bracket_10mm.stl (included)
-//   Bracket profile by CosmicProphet (Thingiverse thing:4075984)
-//   Licensed under CC BY 4.0
+// Self-contained — no external STL dependencies.
+// Bracket profile traced from CosmicProphet's GearTrack Mounting
+// Brackets (Thingiverse thing:4075984), licensed CC BY 4.0.
 //
 // Print settings:
 //   Orientation: flat on bed
@@ -45,7 +45,7 @@ rib_thick = 4.0; // [3:0.5:6]
 
 /* [Advanced] */
 
-// Tab width in mm (matches bracket STL)
+// Tab width in mm (along the track)
 tab_width = 10; // [8:1:14]
 
 // Print just one bracket tab to test GearTrack fit
@@ -55,22 +55,56 @@ test_clip = false;
 
 $fn = 40;
 
+// ----- BRACKET PROFILE -----
+// 2D cross-section of the GearTrack engagement tab.
+// Traced from CosmicProphet's Gearwall_Bracket_10mm.stl
+// (Thingiverse thing:4075984, CC BY 4.0)
+// X = depth (negative = wall, positive = room)
+// Y = height (vertical)
+_bracket_profile = [
+    [  -9.94, -68.00],
+    [ -11.00, -64.50],
+    [  -6.82, -62.50],
+    [  10.52, -62.00],
+    [ -10.98, -57.50],
+    [   2.94, -56.00],
+    [  -8.01,   7.50],
+    [  -5.25,  12.00],
+    [  -9.00,  12.50],
+    [  10.59,  19.00],
+    [  -5.40,  21.00],
+    [  -9.00,  26.00],
+    [  -5.75,  31.50],
+    [  -6.11,  32.00],
+    [  -5.00,  32.00],
+    [  -8.60,  26.00],
+    [  -4.50,  20.50],
+    [  11.00,  19.00],
+    [   2.82,  12.50],
+    [   3.40,  11.00],
+    [  -5.14,   7.00],
+    [   2.99, -57.00],
+    [ -10.59, -58.00],
+    [  11.00, -62.00],
+    [  10.42, -63.00],
+    [ -10.60, -64.50],
+    [  -7.14, -68.00]
+];
+
+// ----- DERIVED -----
 plate_w = (width - 1) * hole_spacing + 2 * plate_margin;
 plate_h = (height - 1) * hole_spacing + 2 * plate_margin;
 
-// 1 tab per 4 columns, minimum 1
 num_tabs = max(1, ceil(width / 4));
 
-// Bracket STL: X: -11..11 (22mm), Y: -67.9..32.1 (100mm), Z: 0..10
-bracket_height = 100;
-bracket_y_min  = -67.9;
-bracket_front  = 11;
+bracket_height = 100;  // Y span of bracket profile
+bracket_y_min  = -68;
+bracket_front  = 11;   // Front face X position
 
 num_gaps = width - 1;
 
 // Edge-to-edge tab distribution
-// 1 tab → center gap
-// 2+ tabs → first gap, last gap, then evenly between
+// 1 tab → center gap; 2+ → first, last, then evenly between
 function tab_gap_index(i, n, gaps) =
     (n == 1) ? floor(gaps / 2) :
     floor(i * (gaps - 1) / (n - 1));
@@ -78,8 +112,11 @@ function tab_gap_index(i, n, gaps) =
 function gap_z(gap_idx) =
     plate_margin + (gap_idx + 0.5) * hole_spacing;
 
+// ----- MODULES -----
+
 module bracket_tab() {
-    import("Gearwall_Bracket_10mm.stl", convexity=10);
+    linear_extrude(height = tab_width)
+        polygon(points = _bracket_profile);
 }
 
 module pegboard_plate() {
@@ -98,6 +135,8 @@ module pegboard_plate() {
 module rib() {
     cube([standoff, plate_h, rib_thick]);
 }
+
+// ----- ASSEMBLY -----
 
 if (test_clip) {
     bracket_tab();
