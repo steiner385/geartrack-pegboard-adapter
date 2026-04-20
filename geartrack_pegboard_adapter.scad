@@ -44,7 +44,8 @@ standoff = 17.0; // [12:1:25]
 rib_thick = 4.0; // [3:0.5:6]
 
 // Gusset size in mm (triangular reinforcement at rib joints)
-gusset = 10.0; // [6:1:15]
+// Max safe value = hole_spacing/2 - rib_thick/2 - hole_dia/2
+gusset = 7.0; // [4:0.5:9]
 
 /* [Advanced] */
 
