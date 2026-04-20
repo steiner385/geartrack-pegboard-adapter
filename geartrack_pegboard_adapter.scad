@@ -59,34 +59,31 @@ test_clip = false;
 $fn = 40;
 
 // ----- BRACKET PROFILE -----
-// GearTrack engagement tab built from rectangular sections.
+// GearTrack engagement tab built from solid rectangular sections.
 // Geometry derived from CosmicProphet's Gearwall_Bracket_10mm.stl
 // (Thingiverse thing:4075984, CC BY 4.0)
 // Each entry: [x, y, width, height]
 _bracket_rects = [
-    [ -10.1, -68.0,   3.1,  1.0],  // Bottom tab (hooks under lower rail)
-    [ -11.0, -64.5,   0.4,  0.5],  // Back catch
-    [  -7.4, -64.0,   0.6,  1.0],  // Lower transition
-    [  -7.2, -63.0,  17.7,  0.5],  // Under lower rail (C-clip)
-    [  -6.8, -62.5,  17.7,  0.5],  // Under lower rail cont.
-    [  10.5, -62.0,   0.5,  0.5],  // Front post lower
-    [ -11.0, -58.0,   0.4,  0.5],  // Back wall return
-    [ -11.0, -57.5,  13.0,  0.5],  // Over lower rail
-    [ -10.8, -57.0,  13.8,  0.5],  // Over lower rail cont.
-    [   2.5, -56.5,   0.8,  0.5],  // Front edge taper
-    [   2.9, -56.0,   0.5,  0.5],  // Front edge taper cont.
-    [  -8.0,   7.0,   3.0,  1.0],  // Upper tab (hooks under upper rail)
-    [  -5.4,  11.0,   8.8,  1.5],  // Back plate / bridge top
-    [  -9.0,  12.5,  11.8,  0.5],  // Rear extension
-    [  10.6,  19.0,   0.4,  0.5],  // Front post upper
-    [  -4.0,  19.5,  15.0,  0.5],  // Under upper rail (C-clip)
-    [  -5.0,  20.0,  15.8,  0.5],  // Under upper rail cont.
-    [  -5.3,  20.5,   0.8,  0.5],  // Over upper rail taper
-    [  -5.4,  21.0,   0.5,  0.5],  // Over upper rail taper cont.
-    [  -9.0,  26.0,   0.4,  0.5],  // Rear feature
-    [  -6.1,  31.5,   1.1,  1.0],  // Top tab
-    // Bridge connecting lower and upper hooks
-    [  -8.0, -56.0,  11.4, 63.0],  // Main bridge plate
+    // --- Lower C-clip (hooks around lower rail) ---
+    [ -10.1, -68.0,   3.1,  4.0],  // Bottom tab tip
+    [ -11.0, -64.5,   1.0,  7.0],  // Back vertical post
+    [  -7.0, -63.0,  18.0,  1.0],  // Horizontal arm UNDER lower rail
+    [  10.5, -63.0,   0.5,  6.0],  // Front vertical post
+    [ -11.0, -58.0,  14.0,  1.0],  // Horizontal arm OVER lower rail
+    [   2.5, -57.0,   1.0,  1.0],  // Front edge transition
+
+    // --- Bridge (connects lower and upper hooks) ---
+    [  -8.0, -57.0,  11.4, 64.0],  // Main bridge plate
+
+    // --- Upper C-clip (hooks around upper rail) ---
+    [  -8.0,   7.0,   3.0,  1.0],  // Upper tab tip
+    [  -5.4,   7.0,   8.8,  6.0],  // Inner plate section
+    [  -9.0,  12.0,  12.0,  1.0],  // Rear extension
+    [  -5.0,  19.0,  16.0,  1.0],  // Horizontal arm UNDER upper rail
+    [  10.5,  19.0,   0.5,  2.0],  // Front vertical post
+    [  -5.4,  20.0,   1.0,  1.0],  // Arm OVER upper rail
+    [  -9.0,  25.5,   0.5,  1.0],  // Rear catch
+    [  -6.1,  31.0,   1.1,  1.5],  // Top tab tip
 ];
 
 // ----- DERIVED -----
